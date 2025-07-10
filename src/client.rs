@@ -18,7 +18,6 @@ struct Client {
     id: String,
     crypto: CryptoManager,
     server_pubkey: Option<PublicKey>,
-    server_x25519_pubkey: Option<X25519PublicKey>,
     connected_clients: std::collections::HashMap<String, X25519PublicKey>,
 }
 
@@ -29,7 +28,6 @@ impl Client {
             id: id.to_string(),
             crypto,
             server_pubkey: None,
-            server_x25519_pubkey: None,
             connected_clients: std::collections::HashMap::new(),
         }
     }

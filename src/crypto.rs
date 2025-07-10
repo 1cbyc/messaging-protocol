@@ -7,7 +7,9 @@ use anyhow::{Result, anyhow};
 
 pub struct CryptoManager {
     ed25519_keypair: Keypair,
+    #[allow(dead_code)]
     x25519_secret: StaticSecret,
+    #[allow(dead_code)]
     x25519_public: X25519PublicKey,
 }
 
@@ -28,19 +30,23 @@ impl CryptoManager {
         self.ed25519_keypair.public
     }
 
+    #[allow(dead_code)]
     pub fn get_x25519_public_key(&self) -> X25519PublicKey {
         self.x25519_public
     }
 
+    #[allow(dead_code)]
     pub fn sign(&self, message: &[u8]) -> Signature {
         self.ed25519_keypair.sign(message)
     }
 
+    #[allow(dead_code)]
     pub fn verify(&self, message: &[u8], signature: &Signature, public_key: &PublicKey) -> Result<()> {
         public_key.verify(message, signature)?;
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn encrypt_message(&self, recipient_public_key: &X25519PublicKey, message: &str) -> Result<Vec<u8>> {
         // Generate shared secret
         let shared_secret = self.x25519_secret.diffie_hellman(recipient_public_key);
@@ -65,6 +71,7 @@ impl CryptoManager {
         Ok(result)
     }
 
+    #[allow(dead_code)]
     pub fn decrypt_message(&self, sender_public_key: &X25519PublicKey, encrypted_data: &[u8]) -> Result<String> {
         if encrypted_data.len() < 12 {
             return Err(anyhow!("Invalid encrypted data length"));

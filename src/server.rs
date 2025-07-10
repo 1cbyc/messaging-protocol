@@ -16,7 +16,7 @@ use tokio::{
     net::TcpListener,
 };
 use anyhow::{Result, anyhow};
-use log::error;
+use log::{error, info};
 
 struct Server {
     crypto: CryptoManager,
