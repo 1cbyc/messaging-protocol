@@ -39,17 +39,17 @@ impl Server {
 
     async fn run(&self, addr: &str) -> Result<()> {
         let listener = TcpListener::bind(addr).await?;
-        info!("🚀 Secure messaging server listening on {}", addr.green());
-        info!("📊 Server public key: {}", hex::encode(self.crypto.get_ed25519_public_key().as_bytes()).yellow());
+        println!("🚀 Secure messaging server listening on {}", addr);
+        println!("📊 Server public key: {}", hex::encode(self.crypto.get_ed25519_public_key().as_bytes()));
 
         loop {
             let (socket, addr) = listener.accept().await?;
-            info!("📱 New connection from {}", addr);
+            println!("📱 New connection from {}", addr);
             
             let server = Arc::new(self.clone());
             tokio::spawn(async move {
                 if let Err(e) = server.handle_connection(socket).await {
-                    error!("❌ Connection error: {}", e);
+                    eprintln!("❌ Connection error: {}", e);
                 }
             });
         }
@@ -61,20 +61,29 @@ impl Server {
         loop {
             let n = match socket.read(&mut buf).await {
                 Ok(n) if n == 0 => {
-                    info!("📴 Client disconnected");
+                    println!("📴 Client disconnected");
                     break;
                 }
                 Ok(n) => n,
                 Err(e) => {
-                    error!("❌ Read error: {}", e);
+                    eprintln!("❌ Read error: {}", e);
                     break;
                 }
             };
 
             let request = String::from_utf8_lossy(&buf[..n]);
-            let response = self.process_request(&request).await?;
+            println!("📨 Received request: {}", request);
+            
+            let response = match self.process_request(&request).await {
+                Ok(resp) => resp,
+                Err(e) => {
+                    eprintln!("❌ Error processing request: {}", e);
+                    ServerResponse::Error { message: e.to_string() }
+                }
+            };
             
             let response_json = serde_json::to_string(&response)?;
+            println!("📤 Sending response: {}", response_json);
             socket.write_all(response_json.as_bytes()).await?;
         }
         
@@ -172,5 +181,18 @@ async fn main() -> Result<()> {
     println!("=====================================");
     
     let server = Server::new()?;
-    server.run("127.0.0.1:8080").await
+    println!("✅ Server initialized successfully");
+    println!("🚀 Starting server on 127.0.0.1:8080...");
+    
+    match server.run("127.0.0.1:8080").await {
+        Ok(_) => {
+            println!("✅ Server shutdown gracefully");
+        }
+        Err(e) => {
+            eprintln!("❌ Server error: {}", e);
+            return Err(e);
+        }
+    }
+    
+    Ok(())
 }
