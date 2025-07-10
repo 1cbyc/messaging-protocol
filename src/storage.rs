@@ -65,10 +65,10 @@ impl Storage {
         clients.insert(client_id, client_info);
         println!("📝 Storage: Client inserted into map");
         
-        // Save to disk
-        println!("📝 Storage: Saving to disk...");
-        self.save_clients().await?;
-        println!("📝 Storage: Save completed");
+        // Temporarily disable file saving to debug
+        println!("📝 Storage: Skipping file save for now");
+        // self.save_clients().await?;
+        println!("📝 Storage: Registration completed");
         Ok(())
     }
 
