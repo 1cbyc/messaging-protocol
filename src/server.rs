@@ -96,12 +96,20 @@ impl Server {
 
         match command {
             ServerCommand::Register { client_id, public_key } => {
-                info!("📝 Registering client: {}", client_id);
-                self.storage.register_client(client_id.clone(), public_key).await?;
-                let response = ServerResponse::Registered {
-                    server_public_key: hex::encode(self.crypto.get_ed25519_public_key().as_bytes()),
-                };
-                Ok(response)
+                println!("📝 Registering client: {}", client_id);
+                match self.storage.register_client(client_id.clone(), public_key).await {
+                    Ok(_) => {
+                        println!("✅ Client registered successfully");
+                        let response = ServerResponse::Registered {
+                            server_public_key: hex::encode(self.crypto.get_ed25519_public_key().as_bytes()),
+                        };
+                        Ok(response)
+                    }
+                    Err(e) => {
+                        eprintln!("❌ Failed to register client: {}", e);
+                        Err(e)
+                    }
+                }
             }
 
             ServerCommand::Send { sender_id, recipient_id, encrypted_content, signature, message_id } => {

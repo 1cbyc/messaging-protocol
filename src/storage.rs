@@ -53,7 +53,9 @@ impl Storage {
     }
 
     pub async fn register_client(&self, client_id: String, public_key: String) -> Result<()> {
+        println!("📝 Storage: Registering client {}", client_id);
         let mut clients = self.clients.write().await;
+        println!("📝 Storage: Got write lock");
         let client_info = ClientInfo {
             id: client_id.clone(),
             public_key,
@@ -61,9 +63,12 @@ impl Storage {
             last_seen: Utc::now(),
         };
         clients.insert(client_id, client_info);
+        println!("📝 Storage: Client inserted into map");
         
         // Save to disk
+        println!("📝 Storage: Saving to disk...");
         self.save_clients().await?;
+        println!("📝 Storage: Save completed");
         Ok(())
     }
 
