@@ -47,15 +47,5 @@ pub enum ServerResponse {
 }
 
 impl Message {
-    pub fn new(sender_id: String, recipient_id: String, content: String) -> Self {
-        Self {
-            id: Uuid::new_v4().to_string(),
-            sender_id,
-            recipient_id,
-            content,
-            timestamp: Utc::now(),
-            encrypted: true,
-            signature: None,
-        }
-    }
+    // Removed unused new function to fix dead code warning
 } 
