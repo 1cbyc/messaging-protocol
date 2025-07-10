@@ -16,17 +16,22 @@ pub struct Storage {
 
 impl Storage {
     pub fn new(data_dir: &str) -> Result<Self> {
+        println!("📁 Creating storage in directory: {}", data_dir);
         // Create data directory if it doesn't exist
         fs::create_dir_all(data_dir)?;
+        println!("✅ Data directory created/verified");
         
         let storage = Self {
             messages: Arc::new(RwLock::new(HashMap::new())),
             clients: Arc::new(RwLock::new(HashMap::new())),
             data_dir: data_dir.to_string(),
         };
+        println!("✅ Storage struct created");
         
         // Load existing data
+        println!("📂 Loading existing data...");
         storage.load_data()?;
+        println!("✅ Data loaded successfully");
         
         Ok(storage)
     }
@@ -99,24 +104,39 @@ impl Storage {
     }
 
     fn load_data(&self) -> Result<()> {
+        println!("🔍 Starting data load...");
+        
         // Load messages
         let messages_path = format!("{}/messages.json", self.data_dir);
+        println!("📂 Checking messages file: {}", messages_path);
         if Path::new(&messages_path).exists() {
+            println!("📖 Loading messages from disk...");
             let content = fs::read_to_string(&messages_path)?;
             let messages: HashMap<String, Vec<Message>> = serde_json::from_str(&content)?;
+            let message_count = messages.len();
             let mut messages_guard = futures::executor::block_on(self.messages.write());
             *messages_guard = messages;
+            println!("✅ Messages loaded: {} message groups", message_count);
+        } else {
+            println!("📝 No existing messages file found");
         }
 
         // Load clients
         let clients_path = format!("{}/clients.json", self.data_dir);
+        println!("📂 Checking clients file: {}", clients_path);
         if Path::new(&clients_path).exists() {
+            println!("📖 Loading clients from disk...");
             let content = fs::read_to_string(&clients_path)?;
             let clients: HashMap<String, ClientInfo> = serde_json::from_str(&content)?;
+            let client_count = clients.len();
             let mut clients_guard = futures::executor::block_on(self.clients.write());
             *clients_guard = clients;
+            println!("✅ Clients loaded: {} clients", client_count);
+        } else {
+            println!("📝 No existing clients file found");
         }
 
+        println!("✅ Data load completed");
         Ok(())
     }
 } 

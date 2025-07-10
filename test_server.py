@@ -28,7 +28,9 @@ def test_server():
         }
         
         print("📤 Sending registration message...")
-        sock.send(json.dumps(register_msg).encode())
+        message = json.dumps(register_msg)
+        print(f"📤 Message: {message}")
+        sock.send(message.encode())
         
         # Wait for response
         print("📥 Waiting for response...")
