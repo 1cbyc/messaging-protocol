@@ -7,6 +7,7 @@ use anyhow::Result;
 use chrono::Utc;
 use tokio::sync::RwLock;
 use std::sync::Arc;
+use futures;
 
 pub struct Storage {
     messages: Arc<RwLock<HashMap<String, Vec<Message>>>>,
