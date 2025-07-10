@@ -39,3 +39,6 @@ venv/
 *.temp
 test_*.py
 simple_*.py
+
+# personal
+docs/README.md
