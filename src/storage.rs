@@ -18,9 +18,15 @@ pub struct Storage {
 impl Storage {
     pub fn new(data_dir: &str) -> Result<Self> {
         println!("📁 Creating storage in directory: {}", data_dir);
+        
         // Create data directory if it doesn't exist
-        fs::create_dir_all(data_dir)?;
-        println!("✅ Data directory created/verified");
+        match fs::create_dir_all(data_dir) {
+            Ok(_) => println!("✅ Data directory created/verified"),
+            Err(e) => {
+                eprintln!("❌ Failed to create data directory: {}", e);
+                // Try to continue anyway
+            }
+        }
         
         let storage = Self {
             messages: Arc::new(RwLock::new(HashMap::new())),
@@ -29,10 +35,13 @@ impl Storage {
         };
         println!("✅ Storage struct created");
         
-        // Load existing data
+        // Load existing data (ignore errors for now)
         println!("📂 Loading existing data...");
-        storage.load_data()?;
-        println!("✅ Data loaded successfully");
+        if let Err(e) = storage.load_data() {
+            eprintln!("⚠️ Warning: Failed to load existing data: {}", e);
+        } else {
+            println!("✅ Data loaded successfully");
+        }
         
         Ok(storage)
     }
@@ -117,12 +126,20 @@ impl Storage {
         println!("📂 Checking messages file: {}", messages_path);
         if Path::new(&messages_path).exists() {
             println!("📖 Loading messages from disk...");
-            let content = fs::read_to_string(&messages_path)?;
-            let messages: HashMap<String, Vec<Message>> = serde_json::from_str(&content)?;
-            let message_count = messages.len();
-            let mut messages_guard = futures::executor::block_on(self.messages.write());
-            *messages_guard = messages;
-            println!("✅ Messages loaded: {} message groups", message_count);
+            match fs::read_to_string(&messages_path) {
+                Ok(content) => {
+                    match serde_json::from_str::<HashMap<String, Vec<Message>>>(&content) {
+                        Ok(messages) => {
+                            let message_count = messages.len();
+                            let mut messages_guard = futures::executor::block_on(self.messages.write());
+                            *messages_guard = messages;
+                            println!("✅ Messages loaded: {} message groups", message_count);
+                        }
+                        Err(e) => eprintln!("⚠️ Warning: Failed to parse messages file: {}", e),
+                    }
+                }
+                Err(e) => eprintln!("⚠️ Warning: Failed to read messages file: {}", e),
+            }
         } else {
             println!("📝 No existing messages file found");
         }
@@ -132,12 +149,20 @@ impl Storage {
         println!("📂 Checking clients file: {}", clients_path);
         if Path::new(&clients_path).exists() {
             println!("📖 Loading clients from disk...");
-            let content = fs::read_to_string(&clients_path)?;
-            let clients: HashMap<String, ClientInfo> = serde_json::from_str(&content)?;
-            let client_count = clients.len();
-            let mut clients_guard = futures::executor::block_on(self.clients.write());
-            *clients_guard = clients;
-            println!("✅ Clients loaded: {} clients", client_count);
+            match fs::read_to_string(&clients_path) {
+                Ok(content) => {
+                    match serde_json::from_str::<HashMap<String, ClientInfo>>(&content) {
+                        Ok(clients) => {
+                            let client_count = clients.len();
+                            let mut clients_guard = futures::executor::block_on(self.clients.write());
+                            *clients_guard = clients;
+                            println!("✅ Clients loaded: {} clients", client_count);
+                        }
+                        Err(e) => eprintln!("⚠️ Warning: Failed to parse clients file: {}", e),
+                    }
+                }
+                Err(e) => eprintln!("⚠️ Warning: Failed to read clients file: {}", e),
+            }
         } else {
             println!("📝 No existing clients file found");
         }
