@@ -1,28 +1,28 @@
-# 🔐 Secure Messaging Protocol
+# Secure Messaging Protocol
 
 A powerful, end-to-end encrypted messaging system built in Rust with modern cryptographic primitives.
 
-## ✨ Features
+## Features
 
-### 🔒 Security
+### Security
 - **End-to-End Encryption**: Messages are encrypted using X25519 key exchange + ChaCha20-Poly1305
 - **Digital Signatures**: Ed25519 signatures ensure message authenticity and integrity
 - **Perfect Forward Secrecy**: Each message uses a new ephemeral key
 - **Zero-Knowledge Server**: Server cannot decrypt messages, only forwards encrypted data
 
-### 🚀 Performance
+### Performance
 - **Async/Await**: Built on Tokio for high-performance concurrent connections
 - **JSON Protocol**: Clean, structured communication between clients and server
 - **Persistent Storage**: Messages and client data stored on disk
 - **Connection Pooling**: Efficient resource management
 
-### 🛠️ Developer Experience
+### Developer Experience
 - **Interactive CLI**: Rich command-line interface for testing
 - **Comprehensive Logging**: Detailed logs with colored output
 - **Error Handling**: Robust error handling with meaningful messages
 - **Modular Architecture**: Clean separation of concerns
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
@@ -42,7 +42,7 @@ A powerful, end-to-end encrypted messaging system built in Rust with modern cryp
 5. **Transmission**: Server receives, verifies signature, and stores message
 6. **Retrieval**: Recipient fetches and decrypts messages
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Rust 1.70+ with Cargo
@@ -70,7 +70,7 @@ cargo run --bin client alice
 cargo run --bin client bob
 ```
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Server Commands
 The server runs automatically and handles:
@@ -141,7 +141,7 @@ To communicate securely, clients must exchange X25519 public keys:
 - **Clients**: `./data/clients.json`
 - **Format**: JSON with timestamps and metadata
 
-## 🛡️ Security Features
+## Security Features
 
 ### End-to-End Encryption
 - Messages are encrypted with recipient's public key
@@ -158,7 +158,7 @@ To communicate securely, clients must exchange X25519 public keys:
 - Compromised keys don't affect past messages
 - Future messages remain secure
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -186,7 +186,7 @@ add recipient_id their_x25519_public_key_hex
 RUST_LOG=debug cargo run --bin client
 ```
 
-## 🚧 Future Enhancements
+## Future Enhancements
 
 - [ ] **WebSocket Support**: Real-time messaging
 - [ ] **Group Chats**: Multi-recipient messages
@@ -197,11 +197,11 @@ RUST_LOG=debug cargo run --bin client
 - [ ] **Offline Support**: Message queuing
 - [ ] **Key Rotation**: Automatic key updates
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details.
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -217,4 +217,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Built with ❤️ in Rust** 
+**Built with ❤️ by Isaac in Rust** 
