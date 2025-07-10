@@ -61,18 +61,16 @@ impl Server {
         loop {
             let n = match socket.read(&mut buf).await {
                 Ok(n) if n == 0 => {
-                    println!("📴 Client disconnected");
                     break;
                 }
                 Ok(n) => n,
                 Err(e) => {
-                    eprintln!("❌ Read error: {}", e);
+                    error!("❌ Read error: {}", e);
                     break;
                 }
             };
 
             let request = String::from_utf8_lossy(&buf[..n]);
-            println!("📨 Received request: {}", request);
             
             let response = match self.process_request(&request).await {
                 Ok(resp) => resp,
@@ -83,7 +81,6 @@ impl Server {
             };
             
             let response_json = serde_json::to_string(&response)?;
-            println!("📤 Sending response: {}", response_json);
             socket.write_all(response_json.as_bytes()).await?;
         }
         
@@ -96,10 +93,8 @@ impl Server {
 
         match command {
             ServerCommand::Register { client_id, public_key } => {
-                println!("📝 Registering client: {}", client_id);
                 match self.storage.register_client(client_id.clone(), public_key).await {
                     Ok(_) => {
-                        println!("✅ Client registered successfully");
                         let response = ServerResponse::Registered {
                             server_public_key: hex::encode(self.crypto.get_ed25519_public_key().as_bytes()),
                         };
